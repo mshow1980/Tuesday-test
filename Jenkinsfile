@@ -2,10 +2,10 @@ pipeline {
     agent any
     environment {
         DOCKERHUB_USERNAME = "mshow1980"
-        APP_NAME = "tuesday_app"
+        APP_NAME = "skill_app"
         IMAGE_TAG = "${BUILD_NUMBER}"
         IMAGE_NAME = "${DOCKERHUB_USERNAME}" + "/" + "${APP_NAME}"
-        REGISTRY_CREDS = 'Docker-logg'
+        REGISTRY_CREDS = 'Docker-login'
         }
     stages {
         stage('Cleanup Workspace'){
@@ -56,13 +56,12 @@ pipeline {
             steps {
                 script{
                     sh """
-                    git config --global user.name "mshow1980@"
+                    git config --global user.name "mshow1980"
                     git config --global user.email "mshow1980@aol.com"
                     git add deployment.yml
                     git commit -m 'Updated the deployment file' """
-                    withCredentials([usernamePassword(credentialsId: 'gitlog', passwordVariable: 'pass', usernameVariable: 'user')]) {
-                        sh 'git remote set-url origin https://gitlog@github.com:mshow1980/Tuesday-test.git'
-                        sh "git push -u origin master"
+                    withCredentials([usernamePassword(credentialsId: 'git-login', passwordVariable: 'pass', usernameVariable: 'user')]) {
+                        sh "git push https://${user}:${pass}@github.com/${user}/Tuesday-test.git HEAD:master"
                     }
                 }
             }
