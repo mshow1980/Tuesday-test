@@ -1,11 +1,11 @@
 pipeline {
     agent any
     environment {
-        DOCKERHUB_USERNAME = "kunchalavikram"
-        APP_NAME = "gitops-demo-app"
+        DOCKERHUB_USERNAME = "mshow1980"
+        APP_NAME = "tuesday_app"
         IMAGE_TAG = "${BUILD_NUMBER}"
         IMAGE_NAME = "${DOCKERHUB_USERNAME}" + "/" + "${APP_NAME}"
-        REGISTRY_CREDS = 'dockerhub'
+        REGISTRY_CREDS = 'Docker-logg'
         }
     stages {
         stage('Cleanup Workspace'){
@@ -18,8 +18,8 @@ pipeline {
         stage('Checkout SCM'){
             steps {
                 git credentialsId: 'github', 
-                url: 'https://github.com/kunchalavikram1427/gitops-demo.git',
-                branch: 'dev'
+                url: 'https://github.com/mshow1980/Tuesday-test.git',
+                branch: 'main'
             }
         }
         stage('Build Docker Image'){
@@ -56,12 +56,12 @@ pipeline {
             steps {
                 script{
                     sh """
-                    git config --global user.name "vikram"
-                    git config --global user.email "vikram@gmail.com"
+                    git config --global user.name "mshow1980@"
+                    git config --global user.email "mshow1980@aol.com"
                     git add deployment.yml
                     git commit -m 'Updated the deployment file' """
                     withCredentials([usernamePassword(credentialsId: 'github', passwordVariable: 'pass', usernameVariable: 'user')]) {
-                        sh "git push http://$user:$pass@github.com/kunchalavikram1427/gitops-demo.git dev"
+                        sh "git push http://$user:$pass@github.com:mshow1980/Tuesday-test.git main"
                     }
                 }
             }
