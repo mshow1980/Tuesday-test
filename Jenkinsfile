@@ -47,21 +47,20 @@ pipeline {
         }
         stage('Updating Kubernetes deployment file'){
             steps {
-                sh "cat deployment.yml"
-                sh "sed -i 's/${APP_NAME}.*/${APP_NAME}:${IMAGE_TAG}/g' deployment.yml"
-                sh "cat deployment.yml"
-            }
-        }
-        stage('Push the changed deployment file to Git'){
-            steps {
                 script{
-                    sh """
-                    git config --global user.name "mshow1980"
-                    git config --global user.email "mshow1980@aol.com"
-                    git add deployment.yml
-                    git commit -m 'Updated the deployment file' """
-                    withCredentials([usernamePassword(credentialsId: 'git-login', passwordVariable: 'pass', usernameVariable: 'user')]) {
-                        sh "git push https://${user}:${pass}@github.com/${user}/Tuesday-test.git HEAD:master"
+                    catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
+                        withCredentials([usernamePassword(credentialsId: 'git-login', passwordVariable: 'pass', usernameVariable: 'user')]) {
+                        sh """
+                        git config --global user.name "mshow1980"
+                        git config --global user.email "mshow1980@aol.com"
+                        cat deployment.yaml
+                        sed -i 's/${APP_NAME}.*/${APP_NAME}:${IMAGE_TAG}/g' deployment.yaml
+                        cat deployment.yaml
+                        git add deployment.yaml
+                        git commit -m 'Updated the deployment file'
+                        git push https://${user}:${pass}@github.com/${user}/Tuesday-test.git HEAD:master
+                        """  
+                        }
                     }
                 }
             }
